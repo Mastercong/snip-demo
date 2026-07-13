@@ -1,0 +1,12 @@
+{
+  "name": "snip-backend",
+  "version": "1.0.0",
+  "description": "Snip - a tiny URL shortener",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["url-shortener", "tiny"],
+  "author": "",
+  "license": "MIT"
+}
