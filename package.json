@@ -1,0 +1,8 @@
+{
+  "name": "snip-bundle",
+  "version": "1.0.0",
+  "description": "Snip – self-contained bundle (generated)",
+  "scripts": {
+    "start": "bun server.js"
+  }
+}
