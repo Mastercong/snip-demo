@@ -1,0 +1,14 @@
+{
+  "name": "snip-cli",
+  "version": "1.0.0",
+  "description": "Snip — command-line client for the Snip URL shortener",
+  "bin": {
+    "snip": "./cli.js"
+  },
+  "scripts": {
+    "start": "node cli.js"
+  },
+  "keywords": ["url-shortener", "cli"],
+  "author": "",
+  "license": "MIT"
+}
