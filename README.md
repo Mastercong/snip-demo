@@ -46,11 +46,50 @@ All responses are JSON. CORS is open (`*`).
 | `backend` | `server.js`, `package.json`, `README.md` | `bun run server.js` |
 | `frontend` | Angular 19 project (`src/`, `angular.json`, …) | `npm start` |
 | `cli` | `cli.js`, `package.json`, wrappers, `README.md` | `node cli.js help` |
-| `main` | This README + `.gitmodules` only | — |
+| `main` | This README + `.gitmodules` + `scripts/` only | — |
+| `bundle` | Generated output (server.js, cli.js, public/, Dockerfile, railway.json) | `bun server.js` |
+
+## Cloning
 
 ---
 
-## Cloning
+## Building the bundle
+
+`scripts/build-bundle.mjs` (Node ≥ 18, zero deps) assembles the `bundle`
+submodule from the three source branches and optionally pushes everything.
+
+```bash
+# assemble locally (no push)
+node scripts/build-bundle.mjs
+
+# assemble + push bundle branch + main submodule pointers
+node scripts/build-bundle.mjs --push
+```
+
+What the script does, in order:
+
+1. `git submodule update --init --remote backend frontend cli` — pull each
+   source submodule to its branch tip
+2. `npm install && npx ng build` in `frontend/` — fails loudly if
+   `dist/snip-frontend/browser/index.html` is missing
+3. Assembles `bundle/`:
+   - copies `backend/server.js` and `cli/cli.js` as-is
+   - copies the Angular build output to `bundle/public/`
+   - writes `.env` (`PUBLIC_DIR=./public` — tells the server to also serve the
+     UI), `package.json` (start: `bun server.js`; no `"type"` field so
+     `cli.js` still runs under plain node), `Dockerfile`
+     (`FROM oven/bun:1-alpine`), `.dockerignore`, and `railway.json`
+4. Commits inside `bundle/` (safe no-op when nothing changed)
+5. Bumps the submodule pointers in the superproject (safe no-op when nothing
+   changed)
+6. With `--push`: pushes `bundle` via `HEAD:bundle` (detached-HEAD-safe) and
+   pushes `main`; also pushes any locally committed-but-not-yet-pushed commits
+   from earlier runs
+
+The script is idempotent: a second run with identical source produces
+`[nothing to commit]` at both steps 4 and 5.
+
+
 
 A plain `git clone` leaves the submodule folders **empty**. Always recurse:
 
