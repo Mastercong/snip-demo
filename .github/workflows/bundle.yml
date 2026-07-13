@@ -1,0 +1,36 @@
+name: Build bundle
+
+# No push trigger: this file only exists on the main branch, so a push trigger
+# would only fire for commits made directly to main. Changes to backend, frontend,
+# and cli live on their own branches — a push trigger here would never see them.
+# The hourly schedule polls those branches and rebuilds whenever they've moved.
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build and push bundle
+        run: node scripts/build-bundle.mjs --push
