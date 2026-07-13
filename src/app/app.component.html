@@ -1,0 +1,53 @@
+<div class="container">
+  <h1>Snip - URL Shortener</h1>
+
+  <div class="form-section">
+    <form (ngSubmit)="createLink()">
+      <input
+        type="text"
+        [(ngModel)]="urlInput"
+        name="url"
+        placeholder="Paste your URL here..."
+        class="url-input"
+        [disabled]="isLoading()"
+      />
+      <button type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'Creating...' : 'Shorten' }}
+      </button>
+    </form>
+
+    <div *ngIf="successMessage()" class="message success">
+      ✓ {{ successMessage() }}
+    </div>
+
+    <div *ngIf="errorMessage()" class="message error">
+      ✗ {{ errorMessage() }}
+    </div>
+  </div>
+
+  <div class="links-section">
+    <h2>Your Links</h2>
+    <div *ngIf="links().length === 0" class="no-links">
+      No links yet. Create one above!
+    </div>
+
+    <table *ngIf="links().length > 0">
+      <thead>
+        <tr>
+          <th>Short Code</th>
+          <th>Original URL</th>
+          <th>Hits</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let link of links()">
+          <td>
+            <a [href]="link.shortUrl" target="_blank">{{ link.code }}</a>
+          </td>
+          <td>{{ link.url }}</td>
+          <td>{{ link.hits }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
